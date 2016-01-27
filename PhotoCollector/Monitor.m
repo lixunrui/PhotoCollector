@@ -7,11 +7,15 @@
 //
 
 #import "Monitor.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 
 @implementation Monitor
+{
+    ALAssetsLibrary* library;
+}
 
-- (void) startMonitorWithIntervalInSec:(int)interval {
+- (void) startMonitorWithIntervalInSec{
    // NSLog(@"Cancel all notifications");
    // [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
@@ -46,7 +50,7 @@
 
 - (void) showTakePhotoRequest{
     NSLog(@"Calling here");
-    [self startMonitorWithIntervalInSec:1];
+    [self startMonitorWithIntervalInSec];
 //    
 //    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
 //        NSLog(@"Running in the background");
@@ -90,6 +94,25 @@
 
 - (void) takePhotos{
     NSLog(@"Photo taken");
+    
+    UIImagePickerController* picker = [[UIImagePickerController alloc] init];
+    
+    picker.delegate = self;
+    
+    picker.allowsEditing=NO;
+    
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    
+    picker.showsCameraControls = NO;
+    
+    [picker takePicture];
+    
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
+    NSLog(@"DOne");
+    
+    UIImage* photo = info[UIImagePickerControllerEditedImage];
     
     
 }

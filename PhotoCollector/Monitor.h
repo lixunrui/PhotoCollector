@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 @import UIKit;
 
-@interface Monitor : NSObject <UIAlertViewDelegate>
+@interface Monitor : NSObject <UIAlertViewDelegate, UINavigationControllerDelegate ,UIImagePickerControllerDelegate>
 - (void) startTimerWithIntervalInSec:(int)interval;
 
 - (void) takePhotos;
