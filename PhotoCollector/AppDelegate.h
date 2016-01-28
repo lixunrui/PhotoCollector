@@ -8,11 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "ViewController.h"
+#import "Monitor.h"
+
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) ViewController* controller;
+@property (strong, nonatomic) Monitor* monitor;
+
+
+@property (strong, nonatomic) AVSpeechSynthesizer *synthesizer;
 
 @end
 

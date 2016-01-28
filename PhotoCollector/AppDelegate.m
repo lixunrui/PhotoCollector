@@ -21,26 +21,31 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    
-    // let the os know, that we still need this app running at background
+
     UIApplication *photoTimer = [UIApplication sharedApplication];
     
     // create background task
     __block UIBackgroundTaskIdentifier bgTask = [photoTimer beginBackgroundTaskWithExpirationHandler:^{
+       
         [photoTimer endBackgroundTask:bgTask];
         bgTask = UIBackgroundTaskInvalid;
     }];
     
-    // create a timer based on the parameter which use to fire taking photo event
-  /*  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        self.controller = (ViewController*)self.window.rootViewController;
-        
-        [self.controller.monitor startTimerWithIntervalInSec:3];
-    }); */
+    NSLog(@"background ");
+    if (self.monitor == nil) {
+        NSLog(@"Init monitor");
+        self.monitor = [[Monitor alloc]init];
+    }
+    [self.monitor startTimerWithIntervalInSec:9];
+    
 }
 
+- (void)backgroundCallback{
+    NSLog(@"backgroundCallback");
+}
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
@@ -52,10 +57,13 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    NSLog(@"Going to be terminated");
 }
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
     
@@ -104,26 +112,31 @@
     
     
     UIUserNotificationSettings* notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:categories];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-
     
+    
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
    
+
+    //register to receive notifications
+   // UIRemoteNotificationType myTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound;
+    //[[UIApplication sharedApplication] registerForRemoteNotificationTypes:myTypes];
+
+    //[[UIApplication sharedApplication] registerForRemoteNotifications];
     
     UILocalNotification *notification = [launchOptions valueForKey:UIApplicationLaunchOptionsLocalNotificationKey];
     
-    NSLog(@"Did finish lanuch with options");
-    if (notification) {
-        [self showAlarm:notification.alertBody];
-        NSLog(@"AppDelegate didFinishLaunchingWithOptions");
-        application.applicationIconBadgeNumber = 0;
-    }
- 
-    [self.window makeKeyAndVisible];
+//    NSLog(@"Did finish lanuch with options");
+//    if (notification) {
+//        [self showAlarm:notification.alertBody];
+//        NSLog(@"AppDelegate didFinishLaunchingWithOptions");
+//        application.applicationIconBadgeNumber = 0;
+//    }
+// 
+//    [self.window makeKeyAndVisible];
     return YES;
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    
     NSLog(@"Receive anything");
     [self showAlarm:notification.alertBody];
     application.applicationIconBadgeNumber = 0;
@@ -135,16 +148,32 @@
     
     if ([identifier isEqualToString:@"ACCEPT_IDENTIFIER"]) {
         NSLog(@"Take photoing....");
-      //  [self.controller.monitor takePhotos];
-       
-        // post a notification
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"TakePhotos" object:self]];
+        
     }
     
     completionHandler();
 }
 
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void (^)())completionHandler{
+    NSLog(@"Remote hanler");
+    
+    if (completionHandler) {
+        completionHandler();
+    }
+}
 
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
+    NSLog(@"anohterere");
+    completionHandler();
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
+    NSLog(@"Got an error");
+}
+
+- (void)application:(UIApplication *)application didFailToContinueUserActivityWithType:(NSString *)userActivityType error:(NSError *)error{
+    NSLog(@"error");
+}
 
 - (void)showAlarm:(NSString *)text {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Alarm"

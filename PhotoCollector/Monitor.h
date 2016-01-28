@@ -7,10 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 @import UIKit;
+@import AVFoundation;
 
 @interface Monitor : NSObject <UIAlertViewDelegate, UINavigationControllerDelegate ,UIImagePickerControllerDelegate>
 - (void) startTimerWithIntervalInSec:(int)interval;
 
 - (void) takePhotos;
+
+- (void)takeCamPhotos;
 @end

@@ -21,7 +21,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     self.monitor = [[Monitor alloc] init];
-    
+   
     AppDelegate* del = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     // create an Observer
     [[NSNotificationCenter defaultCenter] addObserver:self.monitor selector:@selector(takePhotos) name:@"TakePhotos" object:del];
@@ -35,12 +35,14 @@
 
 - (IBAction)didClickStartButton:(id)sender {
     
-    [self.monitor startTimerWithIntervalInSec:10];
+    [self.monitor startTimerWithIntervalInSec:3];
 }
 - (IBAction)didClickExitButton:(id)sender {
     exit(0);
 }
 - (IBAction)didClickPhotoLibraryButton:(id)sender {
+    
+    [self.monitor takeCamPhotos];
 }
 
 @end
