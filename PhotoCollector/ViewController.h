@@ -11,7 +11,7 @@
 
 @interface ViewController : UIViewController
 
-@property (strong) Monitor* monitor;
+@property bool started;
 
 @end
 

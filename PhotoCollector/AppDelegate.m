@@ -35,11 +35,13 @@
     }];
     
     NSLog(@"background ");
-    if (self.monitor == nil) {
-        NSLog(@"Init monitor");
-        self.monitor = [[Monitor alloc]init];
+    if (self.controller.started) {
+        if (self.monitor == nil) {
+            NSLog(@"Init monitor");
+            self.monitor = [[Monitor alloc]init];
+        }
+        [self.monitor startTimerWithIntervalInSec:9];
     }
-    [self.monitor startTimerWithIntervalInSec:9];
     
 }
 

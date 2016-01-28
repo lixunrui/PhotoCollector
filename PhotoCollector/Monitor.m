@@ -11,14 +11,41 @@
 #import "ALAssetsLibrary+CustomPhotoAlbum.h"
 
 
+#define CustomPhotoAlbumName @"New Album"
+
+const NSInteger kConditionLockWaiting = 0;
+const NSInteger kConditionLockShouldProceed = 1;
+
+
 @implementation Monitor
 {
     ALAssetsLibrary* library;
     NSInteger _interval;
     AVCaptureStillImageOutput* StillImageOutput;
+    AVCaptureSession* captureSession;
+    NSConditionLock* camlock ;
+    NSConditionLock* photoLock;
 }
 
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self initLibrary];
+        camlock = [[NSConditionLock alloc]initWithCondition:kConditionLockWaiting];
+       // [self initCapture];
+    }
+    return self;
+}
+
+- (void)initLibrary{
+    library = [[ALAssetsLibrary alloc]init];
+    
+    [library loadAssetsForProperty:ALAssetPropertyAssetURL fromAlbum:CustomPhotoAlbumName completion:^(NSMutableArray *array, NSError *error) {
+        NSLog(@"Completed");
+    }];
+}
 
 - (void) startTimerWithIntervalInSec:(int)interval{
     
@@ -123,74 +150,113 @@
 
 }
 
-- (void) takePhotos{
-    NSLog(@"Photo taken");
-    
-    UIImagePickerController* picker = [[UIImagePickerController alloc] init];
-    
-    picker.delegate = self;
-    
-    picker.allowsEditing=NO;
-    
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    
-    picker.showsCameraControls = NO;
-    
-    [picker takePicture];
-    
-}
-
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
-    NSLog(@"DOne");
-    
-    UIImage* photo = info[UIImagePickerControllerEditedImage];
-    
-    
-}
-
-- (void)takeCamPhotos{
-    AVCaptureSession* captureSession = [[AVCaptureSession alloc]init];
+- (void)takeCamPhotoOn:(NSInteger)position{
+    captureSession = [[AVCaptureSession alloc]init];
     
     [captureSession setSessionPreset:AVCaptureSessionPresetPhoto];
     
-    //AVCaptureDevice* imageDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    
-    AVCaptureDevice *inputDevice = nil;
     NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    
+    AVCaptureDevice* inputDevice = nil;
     for(AVCaptureDevice *camera in devices) {
-       // if([camera position] == AVCaptureDevicePositionFront) { // is front camera
+        if (camera.position == position) {
             inputDevice = camera;
-        NSLog(@"Position is %ld", (long)inputDevice.position);
+            if ([inputDevice isWhiteBalanceModeSupported:AVCaptureWhiteBalanceModeAutoWhiteBalance]) {
+                if ([inputDevice lockForConfiguration:nil]) {
+                    [inputDevice setWhiteBalanceMode:AVCaptureWhiteBalanceModeLocked];
+                    [inputDevice unlockForConfiguration];
+                }
+            }
             break;
-       // }
-       // else{
-            // back camera
+        }
+    }
+    
+         //   [inputDevice addObserver:self forKeyPath:@"adjustingWhiteBalance" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
             
-       // }
+            NSLog(@" camera %@", inputDevice.localizedName);
+            
+            NSError* error;
+            
+            AVCaptureDeviceInput* deviceInputFront = nil;
+            if (inputDevice != nil) {
+                deviceInputFront = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:&error];
+            }
+            
+            //[captureSession beginConfiguration];
+          //  NSLog(@"add into session");
+            if ([captureSession canAddInput:deviceInputFront]) {
+                [captureSession addInput:deviceInputFront];
+            }
+            
+            StillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+            
+            NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:AVVideoCodecJPEG, AVVideoCodecKey, nil];
+            
+            [StillImageOutput setOutputSettings:outputSettings];
+            NSLog(@"set up output");
+            if ([captureSession canAddOutput:StillImageOutput]) {
+                [captureSession addOutput:StillImageOutput];
+            }
+          
+            
+            if (![captureSession isRunning]) {
+                [captureSession startRunning];
+            }
+    
+    [NSThread sleepForTimeInterval:0.3];
+    [self take];
+    
+    //[camlock lockWhenCondition:kConditionLockShouldProceed];
+}
+
+- (void)takeBackPhoto{
+    [self takeCamPhotoOn:AVCaptureDevicePositionBack];
+}
+
+- (void)takeFrontPhoto{
+    [self takeCamPhotoOn:AVCaptureDevicePositionFront];
+}
+
+- (void)takeScreenShot{
+    
+}
+
+- (void) takePhotos{
+
+    [self takeBackPhoto];
+    [self takeFrontPhoto];
+    [self takeScreenShot];
+
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context{
+   
+    AVCaptureDevice* device = (AVCaptureDevice*)object;
+    NSLog(@"object is %@", device.localizedName);
+    
+    NSLog(@"path is %@", keyPath);
+    NSLog(@"old change s %@", change[@"old"]);
+    NSLog(@"new change s %@", change[@"new"]);
+    
+    if ([keyPath isEqualToString:@"adjustingWhiteBalance"]) {
+ 
         
+        if ( [[change objectForKey:@"old"] boolValue] == YES &&
+            [[change objectForKey:@"new"] boolValue] == NO) {
+            
+            //[self take];
+            NSLog(@"Remove observer");
+            
+          //  [camlock unlockWithCondition:kConditionLockShouldProceed];
+            [device removeObserver:self forKeyPath:@"adjustingWhiteBalance"];
+        }
     }
-    
-    NSError* error;
-    
-    AVCaptureDeviceInput* deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:&error];
-    
-    if ([captureSession canAddInput:deviceInput]) {
-        [captureSession addInput:deviceInput];
-    }
+}
     
     
-     StillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+- (void)take{
     
-    NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:AVVideoCodecJPEG, AVVideoCodecKey, nil];
-    
-    [StillImageOutput setOutputSettings:outputSettings];
-    
-    [captureSession addOutput:StillImageOutput];
-    
-    [captureSession startRunning];
-    
-    
-    
+    NSLog(@"Take");
     AVCaptureConnection *videoConnection = nil;
     
     for (AVCaptureConnection *connection in StillImageOutput.connections) {
@@ -201,15 +267,16 @@
             }
         }
     }
+    
+    __block bool completed = false;
+    
     [StillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
         if (imageDataSampleBuffer != NULL) {
+ 
             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
             UIImage *image = [UIImage imageWithData:imageData];
             NSLog(@"%@", image);
             
-           // UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-            
-            /*
             // The completion block to be executed after image taking action process done
             void (^completion)(NSURL *, NSError *) = ^(NSURL *assetURL, NSError *error) {
                 if (error) {
@@ -219,37 +286,30 @@
                 
                 NSLog(@"%s: Save image with asset url %@ (absolute path: %@), type: %@", __PRETTY_FUNCTION__,
                       assetURL, [assetURL absoluteString], [assetURL class]);
-                // Add new item to |photos_| & table view appropriately
-                //NSIndexPath * indexPath = [NSIndexPath indexPathForRow:self.photoURLs.count
-    //                                                         inSection:0];
-//                [self.photoURLs addObject:assetURL];
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    [self.tableView insertRowsAtIndexPaths:@[indexPath]
-//                                          withRowAnimation:UITableViewRowAnimationFade];
-//                });
+               // NSLog(@"release camlock");
+              //  [camlock unlockWithCondition:kConditionLockShouldProceed];
+                [captureSession stopRunning];
+                completed = true;
             };
             
             void (^failure)(NSError *) = ^(NSError *error) {
                 if (error) NSLog(@"%s: Failed to add the asset to the custom photo album: %@",
                                  __PRETTY_FUNCTION__, [error localizedDescription]);
+                completed = true;
             };
             
-            
-            library = [[ALAssetsLibrary alloc]init];
-            // Save image to custom photo album
-            // The lifetimes of objects you get back from a library instance are tied to
-            //   the lifetime of the library instance.
+           
             [library saveImage:image
-                                  toAlbum:@"Custom Photo Album"
-                               completion:completion
-                                  failure:failure];
-             */
+                       toAlbum:CustomPhotoAlbumName
+                    completion:completion
+                       failure:failure];
             
-            [library saveImage:image toAlbum:@"New" withCompletionBlock:nil];
         }
     }
      ];
-}
+    
+    // should wait here until the block is completed
 
+}
 
 @end

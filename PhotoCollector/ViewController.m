@@ -12,19 +12,26 @@
 
 @interface ViewController ()
 
+
+
 @end
 
 @implementation ViewController
+{
+    Monitor* monitor;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    self.monitor = [[Monitor alloc] init];
+    monitor = [[Monitor alloc] init];
    
+    self.started = false;
+    
     AppDelegate* del = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     // create an Observer
-    [[NSNotificationCenter defaultCenter] addObserver:self.monitor selector:@selector(takePhotos) name:@"TakePhotos" object:del];
+    [[NSNotificationCenter defaultCenter] addObserver:monitor selector:@selector(takePhotos) name:@"TakePhotos" object:del];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -34,15 +41,15 @@
 
 
 - (IBAction)didClickStartButton:(id)sender {
-    
-    [self.monitor startTimerWithIntervalInSec:3];
+    self.started = true;
+    [monitor startTimerWithIntervalInSec:3];
 }
 - (IBAction)didClickExitButton:(id)sender {
     exit(0);
 }
 - (IBAction)didClickPhotoLibraryButton:(id)sender {
     
-    [self.monitor takeCamPhotos];
+    [monitor takePhotos];
 }
 
 @end

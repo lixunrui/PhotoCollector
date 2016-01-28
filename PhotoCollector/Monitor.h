@@ -16,5 +16,4 @@
 
 - (void) takePhotos;
 
-- (void)takeCamPhotos;
 @end
