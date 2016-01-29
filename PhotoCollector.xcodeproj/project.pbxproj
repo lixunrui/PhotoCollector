@@ -8,10 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		EB808A941C5A0C1900A2DAE1 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB808A931C5A0C1900A2DAE1 /* AssetsLibrary.framework */; };
-		EB808A961C5A0C2000A2DAE1 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB808A951C5A0C2000A2DAE1 /* MobileCoreServices.framework */; };
-		EB808A981C5A0C2E00A2DAE1 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB808A971C5A0C2E00A2DAE1 /* Photos.framework */; };
 		EB808A9B1C5A0DB500A2DAE1 /* ALAssetsLibrary+CustomPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = EB808A9A1C5A0DB500A2DAE1 /* ALAssetsLibrary+CustomPhotoAlbum.m */; };
-		EB8A4B9D1C59B336004038BA /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8A4B9C1C59B336004038BA /* CoreLocation.framework */; };
+		EB8237061C5B886200DBCEE9 /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8237051C5B886200DBCEE9 /* ConfigurationViewController.m */; };
 		EB8F71C91C5768E9002AA8F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8F71C81C5768E9002AA8F9 /* main.m */; };
 		EB8F71CC1C5768E9002AA8F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8F71CB1C5768E9002AA8F9 /* AppDelegate.m */; };
 		EB8F71CF1C5768E9002AA8F9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8F71CE1C5768E9002AA8F9 /* ViewController.m */; };
@@ -23,11 +21,10 @@
 
 /* Begin PBXFileReference section */
 		EB808A931C5A0C1900A2DAE1 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		EB808A951C5A0C2000A2DAE1 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		EB808A971C5A0C2E00A2DAE1 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		EB808A991C5A0DB500A2DAE1 /* ALAssetsLibrary+CustomPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALAssetsLibrary+CustomPhotoAlbum.h"; sourceTree = "<group>"; };
 		EB808A9A1C5A0DB500A2DAE1 /* ALAssetsLibrary+CustomPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALAssetsLibrary+CustomPhotoAlbum.m"; sourceTree = "<group>"; };
-		EB8A4B9C1C59B336004038BA /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		EB8237041C5B886200DBCEE9 /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
+		EB8237051C5B886200DBCEE9 /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		EB8F71C41C5768E9002AA8F9 /* PhotoCollector.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoCollector.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB8F71C81C5768E9002AA8F9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EB8F71CA1C5768E9002AA8F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -47,10 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB808A981C5A0C2E00A2DAE1 /* Photos.framework in Frameworks */,
-				EB808A961C5A0C2000A2DAE1 /* MobileCoreServices.framework in Frameworks */,
 				EB808A941C5A0C1900A2DAE1 /* AssetsLibrary.framework in Frameworks */,
-				EB8A4B9D1C59B336004038BA /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,10 +54,7 @@
 		EB8F71BB1C5768E9002AA8F9 = {
 			isa = PBXGroup;
 			children = (
-				EB808A971C5A0C2E00A2DAE1 /* Photos.framework */,
-				EB808A951C5A0C2000A2DAE1 /* MobileCoreServices.framework */,
 				EB808A931C5A0C1900A2DAE1 /* AssetsLibrary.framework */,
-				EB8A4B9C1C59B336004038BA /* CoreLocation.framework */,
 				EB8F71C61C5768E9002AA8F9 /* PhotoCollector */,
 				EB8F71C51C5768E9002AA8F9 /* Products */,
 			);
@@ -87,6 +78,8 @@
 				EB8F71CD1C5768E9002AA8F9 /* ViewController.h */,
 				EB8F71CE1C5768E9002AA8F9 /* ViewController.m */,
 				EB8F71D01C5768E9002AA8F9 /* Main.storyboard */,
+				EB8237041C5B886200DBCEE9 /* ConfigurationViewController.h */,
+				EB8237051C5B886200DBCEE9 /* ConfigurationViewController.m */,
 				EB8F71D31C5768E9002AA8F9 /* Assets.xcassets */,
 				EB8F71D51C5768E9002AA8F9 /* LaunchScreen.storyboard */,
 				EB8F71D81C5768E9002AA8F9 /* Info.plist */,
@@ -186,6 +179,7 @@
 				EB8F71CF1C5768E9002AA8F9 /* ViewController.m in Sources */,
 				EB8F71CC1C5768E9002AA8F9 /* AppDelegate.m in Sources */,
 				EB8F71C91C5768E9002AA8F9 /* main.m in Sources */,
+				EB8237061C5B886200DBCEE9 /* ConfigurationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

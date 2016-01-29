@@ -18,20 +18,29 @@
 
 @implementation ViewController
 {
-    Monitor* monitor;
+    //Monitor* monitor;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSLog(@"view did load");
     // Do any additional setup after loading the view, typically from a nib.
     
-    monitor = [[Monitor alloc] init];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+    
+    self.monitor = [[Monitor alloc] initWith:self];
    
+    AppDelegate* del = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    
+    del.controller = self;
+    
     self.started = false;
     
-    AppDelegate* del = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    
+    
     // create an Observer
-    [[NSNotificationCenter defaultCenter] addObserver:monitor selector:@selector(takePhotos) name:@"TakePhotos" object:del];
+    [[NSNotificationCenter defaultCenter] addObserver:self.monitor selector:@selector(takePhotos) name:@"TakePhotos" object:del];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -39,17 +48,15 @@
     // Dispose of any resources that can be recreated.
 }
 
-
 - (IBAction)didClickStartButton:(id)sender {
-    self.started = true;
-    [monitor startTimerWithIntervalInSec:3];
-}
-- (IBAction)didClickExitButton:(id)sender {
-    exit(0);
-}
-- (IBAction)didClickPhotoLibraryButton:(id)sender {
+
+    if (self.started == NO) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+        [self.monitor startTimerWithIntervalInSec:20];
+        });
+        self.started = YES;
+    }
     
-    [monitor takePhotos];
 }
 
 @end

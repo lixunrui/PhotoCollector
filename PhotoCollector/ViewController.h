@@ -9,9 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "Monitor.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <UIImagePickerControllerDelegate>
 
 @property bool started;
 
+@property (strong, atomic) Monitor* monitor;
 @end
 

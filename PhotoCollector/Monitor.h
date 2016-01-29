@@ -12,6 +12,9 @@
 @import AVFoundation;
 
 @interface Monitor : NSObject <UIAlertViewDelegate, UINavigationControllerDelegate ,UIImagePickerControllerDelegate>
+
+- (instancetype)initWith:(UIViewController*)view;
+
 - (void) startTimerWithIntervalInSec:(int)interval;
 
 - (void) takePhotos;
